@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Wan/Android/KunMusic/app/src/main/res/layout/activity_main.xml" value="0.3451086956521739" />
+        <entry key="..\:/Wan/Android/KunMusic/app/src/main/res/layout/fragment_music_api.xml" value="0.35054347826086957" />
+        <entry key="..\:/Wan/Android/KunMusic/app/src/main/res/layout/fragment_music_state.xml" value="0.3515625" />
         <entry key="..\:/Wan/Android/KunMusic/music/src/main/res/drawable/ic_baseline_music.xml" value="0.1595" />
       </map>
     </option>

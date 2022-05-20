@@ -1,18 +1,38 @@
 package site.caikun.kunmusic
 
+import android.graphics.Color
+import androidx.fragment.app.Fragment
+import com.drake.statusbar.immersive
+import com.google.android.material.tabs.TabLayoutMediator
+import site.caikun.kunmusic.adapter.ViewPagerAdapter
 import site.caikun.kunmusic.databinding.ActivityMainBinding
-import site.caikun.music.KunMusic
-import site.caikun.music.utils.MusicInfo
+import site.caikun.kunmusic.engine.EngineActivity
+import site.caikun.kunmusic.fragment.MusicApiFragment
+import site.caikun.kunmusic.fragment.MusicStateFragment
 
 class MainActivity : EngineActivity<ActivityMainBinding>(R.layout.activity_main) {
 
+    override fun onStart() {
+        super.onStart()
+        immersive(Color.WHITE, true)
+    }
+
     override fun init() {
-        binding.button.setOnClickListener {
-            binding.textView.text = KunMusic.binder()?.random()
-            val musicInfo = MusicInfo()
-            musicInfo.musicId = "123"
-            musicInfo.musicUrl = "http://m701.music.126.net/20220521000003/f764c0abde130bea190b2b938226a770/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/14096418064/eabf/4b08/3f90/3a4eeeebf753ddcab37c3143ce69526e.mp3"
-            KunMusic.binder()?.player?.play(musicInfo)
+        val fragmentList = mutableListOf<Fragment>()
+        val fragmentTitle = mutableListOf<String>("state", "api")
+        fragmentList.add(MusicStateFragment())
+        fragmentList.add(MusicApiFragment())
+
+        val adapter = ViewPagerAdapter(this, fragmentList)
+        binding.viewPager.adapter = adapter
+
+        val tabLayoutMediator = TabLayoutMediator(
+            binding.tabLayout,
+            binding.viewPager,
+            true
+        ) { tab, position ->
+            tab.text = fragmentTitle[position]
         }
+        tabLayoutMediator.attach()
     }
 }
