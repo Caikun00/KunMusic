@@ -11,13 +11,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'site.caikun.music'
                 artifactId = 'KunMusic'
-                version = '1.0'
-            }
-            debug(MavenPublication) {
-                from components.debug
-                groupId = 'site.caikun.music'
-                artifactId = 'KunMusic'
-                version = '1.0'
+                version = '0.11'
             }
         }
     }
