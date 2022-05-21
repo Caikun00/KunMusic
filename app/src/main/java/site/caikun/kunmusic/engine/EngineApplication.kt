@@ -3,6 +3,7 @@ package site.caikun.kunmusic.engine
 import android.app.Application
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import site.caikun.kunmusic.utils.ToastUtil
 import site.caikun.music.KunMusic
 
 class EngineApplication : Application(), ViewModelStoreOwner {
@@ -18,6 +19,7 @@ class EngineApplication : Application(), ViewModelStoreOwner {
 
     private fun init() {
         KunMusic.init(this)
+        ToastUtil.init(this)
     }
 
     override fun getViewModelStore(): ViewModelStore {

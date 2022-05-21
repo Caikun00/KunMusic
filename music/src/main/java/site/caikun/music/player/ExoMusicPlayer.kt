@@ -72,8 +72,12 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
                 setMediaSource(mediaSource)
                 prepare()
                 playWhenReady = true
+                error = false
                 Log.d(TAG, "play: $source")
             }
+        } else {
+            error = true
+            callback?.onPlayerError(musicInfo, "播放地址为空")
         }
     }
 
@@ -107,7 +111,9 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
      * 设置进度
      */
     override fun seekTo(position: Long) {
-        player?.seekTo(position)
+        if (position > 0 && position < duration()) {
+            player?.seekTo(position)
+        }
     }
 
     /**

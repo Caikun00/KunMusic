@@ -6,7 +6,7 @@ import site.caikun.music.utils.MusicInfo
 class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
 
     private var musicInfoList = MutableLiveData<List<MusicInfo>>()
-    var index = 0
+    private var index = 0
 
     /**
      * 设置播放列表

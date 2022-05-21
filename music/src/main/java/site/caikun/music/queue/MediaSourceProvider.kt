@@ -24,6 +24,7 @@ class MediaSourceProvider {
             value.forEach {
                 sources[it.musicId] = it
             }
+            Log.d(TAG, "sources size: ${sources.size}")
         }
 
     fun addMusicInfo(musicInfo: MusicInfo) {

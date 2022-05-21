@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.*
 import android.os.IBinder
 import android.util.Log
+import site.caikun.music.player.MusicController
 import site.caikun.music.service.MusicService
 import site.caikun.music.service.MusicServiceBinder
 import site.caikun.music.utils.ServiceToken
@@ -18,6 +19,7 @@ object KunMusic {
     private var isBindService: Boolean = false
     private var connectionMap = WeakHashMap<Context, ServiceConnection>()
     private var retryLineService = 0
+    private var controller: MusicController? = null
     private var connection: ServiceConnection? = null
 
     @SuppressLint("StaticFieldLeak")
@@ -31,6 +33,10 @@ object KunMusic {
     fun init(application: Application) {
         this.application = application;
         bindService()
+    }
+
+    fun with(): MusicController? {
+        return controller
     }
 
     /**
@@ -81,6 +87,7 @@ object KunMusic {
                     retryLineService = 0
                     binder = service
                     isBindService = true
+                    controller = MusicController()
                     connection?.onServiceConnected(name, service)
                 }
             } catch (e: Exception) {
