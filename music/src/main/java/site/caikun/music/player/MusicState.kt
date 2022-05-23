@@ -17,6 +17,7 @@ class MusicState {
                 CustomMusicPlayer.STATE_PLAYING -> PLAYING
                 CustomMusicPlayer.STATE_PAUSE -> PAUSE
                 CustomMusicPlayer.STATE_ERROR -> ERROR
+                CustomMusicPlayer.STATE_SWITCH -> SWITCH
                 else -> IDLE
             }
         }

@@ -1,5 +1,6 @@
 package site.caikun.kunmusic.fragment
 
+import android.util.Log
 import site.caikun.kunmusic.R
 import site.caikun.kunmusic.databinding.FragmentMusicApiBinding
 import site.caikun.kunmusic.engine.EngineFragment
@@ -26,6 +27,7 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
 
         KunMusic.with()?.currentState()?.observe(this) {
             binding.text.text = it
+            Log.d(TAG, "state: $it")
         }
 
         binding.pause.setOnClickListener { KunMusic.with()?.pause() }

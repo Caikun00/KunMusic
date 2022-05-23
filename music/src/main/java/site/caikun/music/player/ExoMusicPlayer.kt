@@ -15,6 +15,7 @@ import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_ERROR
 import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_IDLE
 import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_PAUSE
 import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_PLAYING
+import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_SWITCH
 import site.caikun.music.utils.MusicInfo
 
 class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
@@ -65,6 +66,7 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
      */
     override fun play(musicInfo: MusicInfo) {
         if (!TextUtils.isEmpty(musicInfo.musicId)) {
+            error = false
             val source = musicInfo.musicUrl
             val mediaSource = ExoMediaSource.createMediaSource(context, source)
 
@@ -72,7 +74,6 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
                 setMediaSource(mediaSource)
                 prepare()
                 playWhenReady = true
-                error = false
                 Log.d(TAG, "play: $source")
             }
         } else {
@@ -86,17 +87,24 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
      */
     override fun start() {
         if (player?.currentMediaItem != null) {
+            Log.d(TAG, "start: ")
             player?.play()
         }
     }
 
     /**
-     * 暂停
+     * 暂停 继续
      */
     override fun pause() {
-        if (state() == STATE_IDLE) return
-        if (player?.isPlaying == true) {
-            player?.pause()
+        if (!error) {
+            if (player?.isPlaying == true) {
+                player?.pause()
+                callback?.onPlayerStateChanged(currentMusicInfo, STATE_PAUSE)
+
+            } else {
+                player?.play()
+                callback?.onPlayerStateChanged(currentMusicInfo, STATE_PLAYING)
+            }
         }
     }
 
@@ -155,18 +163,13 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
             var newState = STATE_IDLE
             when (playbackState) {
                 Player.STATE_IDLE -> newState = if (error) STATE_ERROR else STATE_IDLE
-                Player.STATE_READY -> {
-                    newState = if (player?.playWhenReady == true) STATE_PLAYING else STATE_PAUSE
-                }
+                Player.STATE_READY -> newState = STATE_PLAYING
                 Player.STATE_ENDED -> {
-                    newState = STATE_IDLE
                     callback?.onComplete()
                 }
                 Player.STATE_BUFFERING -> newState = STATE_BUFFERING
             }
-            if (!error) {
-                callback?.onPlayerStateChanged(currentMusicInfo, newState)
-            }
+            callback?.onPlayerStateChanged(currentMusicInfo, newState)
         }
 
         /**
@@ -175,16 +178,9 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
          */
         override fun onPlayerError(message: PlaybackException) {
             error = true
-            callback?.onPlayerError(currentMusicInfo, message.toString())
-        }
-    }
-
-    private fun state(): Int {
-        return when (player?.playbackState) {
-            Player.STATE_IDLE -> STATE_IDLE
-            Player.STATE_BUFFERING -> STATE_BUFFERING
-            Player.STATE_READY -> STATE_PLAYING
-            else -> STATE_IDLE
+            callback?.apply {
+                onPlayerError(currentMusicInfo, message.message.toString())
+            }
         }
     }
 }

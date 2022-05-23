@@ -10,6 +10,7 @@ interface CustomMusicPlayer {
         const val STATE_PLAYING = 2       //播放
         const val STATE_PAUSE = 3         //暂停
         const val STATE_ERROR = 4         //出错
+        const val STATE_SWITCH = 5        //切歌
         const val STATE_BUFFERING = 6     //缓冲
     }
 

@@ -87,23 +87,26 @@ class MusicController : CustomMusicPlayer.Callback {
      */
 
     override fun onPlayerStateChanged(musicInfo: MusicInfo?, state: Int) {
-        Log.d(TAG, "MusicController: ${this.state.value}")
         this.state.postValue(MusicState.transitionState(state))
+        Log.d(TAG, "onPlayerStateChanged: ${MusicState.transitionState(state)}")
     }
 
     override fun onComplete() {
+        Log.d(TAG, "onComplete: ")
         skipToNext()
     }
 
     override fun onSkipToNext() {
-        state.postValue(MusicState.SWITCH)
+        onPlayerStateChanged(currentMusicInfo(),CustomMusicPlayer.STATE_SWITCH)
+        Log.d(TAG, "onSkipToNext: ")
     }
 
     override fun onSkipToLast() {
-        state.postValue(MusicState.SWITCH)
+        onPlayerStateChanged(currentMusicInfo(),CustomMusicPlayer.STATE_SWITCH)
+        Log.d(TAG, "onSkipToLast: ")
     }
 
     override fun onPlayerError(musicInfo: MusicInfo?, message: String) {
-        state.postValue(MusicState.ERROR)
+        Log.d(TAG, "onPlayerError: $message")
     }
 }
