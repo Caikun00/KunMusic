@@ -19,5 +19,5 @@ class MainLooper(looper: Looper) : Handler(looper) {
         instance.postDelayed(runnable, delay)
     }
 
-    private fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
+    private fun isMainThread() = Looper.getMainLooper() == Looper.myLooper()
 }

@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.*
 import android.os.IBinder
 import android.util.Log
+import site.caikun.music.interceptor.MusicInterceptor
 import site.caikun.music.player.MusicController
 import site.caikun.music.service.MusicService
 import site.caikun.music.service.MusicServiceBinder
@@ -22,6 +23,8 @@ object KunMusic {
     private var controller: MusicController? = null
     private var connection: ServiceConnection? = null
 
+    private var interceptors = mutableListOf<Pair<MusicInterceptor, String>>()
+
     @SuppressLint("StaticFieldLeak")
     private var serviceToken: ServiceToken? = null
 
@@ -37,6 +40,10 @@ object KunMusic {
 
     fun with(): MusicController? {
         return controller
+    }
+
+    fun addInterceptor(interceptor: MusicInterceptor, thread: String) {
+        interceptors += Pair(interceptor, thread)
     }
 
     /**
@@ -86,9 +93,9 @@ object KunMusic {
                 if (service is MusicServiceBinder) {
                     retryLineService = 0
                     binder = service
-                    isBindService = true
-                    controller = MusicController()
                     connection?.onServiceConnected(name, service)
+                    controller = MusicController(interceptors)
+                    isBindService = true
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -3,8 +3,11 @@ package site.caikun.kunmusic.engine
 import android.app.Application
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import site.caikun.kunmusic.utils.MusicUrlInterceptor
 import site.caikun.kunmusic.utils.ToastUtil
 import site.caikun.music.KunMusic
+import site.caikun.music.interceptor.InterceptorService
+import site.caikun.music.interceptor.InterceptorThread
 
 class EngineApplication : Application(), ViewModelStoreOwner {
 
@@ -18,7 +21,10 @@ class EngineApplication : Application(), ViewModelStoreOwner {
     }
 
     private fun init() {
-        KunMusic.init(this)
+        KunMusic.apply {
+            addInterceptor(MusicUrlInterceptor(), InterceptorThread.IO)
+            init(this@EngineApplication)
+        }
         ToastUtil.init(this)
     }
 

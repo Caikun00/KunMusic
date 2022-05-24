@@ -1,5 +1,6 @@
 package site.caikun.music.queue
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import site.caikun.music.utils.MusicInfo
 
@@ -7,6 +8,10 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
 
     private var musicInfoList = MutableLiveData<List<MusicInfo>>()
     private var index = 0
+
+    companion object{
+        const val TAG = "KunMusic"
+    }
 
     /**
      * 设置播放列表

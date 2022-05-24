@@ -3,13 +3,21 @@ package site.caikun.music.player
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import site.caikun.music.KunMusic
+import site.caikun.music.interceptor.InterceptorService
+import site.caikun.music.interceptor.MusicInterceptor
+import site.caikun.music.interceptor.MusicInterceptorCallback
 import site.caikun.music.queue.MediaSourceManager
 import site.caikun.music.queue.MediaSourceProvider
 import site.caikun.music.utils.MusicInfo
 
-class MusicController : CustomMusicPlayer.Callback {
+class MusicController(
+    interceptors: List<Pair<MusicInterceptor, String>>
+) : CustomMusicPlayer.Callback {
 
     private var player = KunMusic.binder()?.player
+    private val interceptorService = InterceptorService()
+    private val mediaSourceManager = MediaSourceManager(MediaSourceProvider())
+    private val state = MutableLiveData<String>(MusicState.IDLE)
 
     companion object {
         const val TAG = "KunMusic"
@@ -17,14 +25,26 @@ class MusicController : CustomMusicPlayer.Callback {
 
     init {
         player?.setCallback(this)
+        interceptorService.attachInterceptors(interceptors)
     }
 
-    private val mediaSourceManager = MediaSourceManager(MediaSourceProvider())
-    private val state = MutableLiveData<String>(MusicState.IDLE)
-
     fun playMusic(musicInfo: MusicInfo) {
-        add(musicInfo)
-        player?.play(currentMusicInfo())
+        Log.d(TAG, "playMusic: ")
+        interceptorService.handlerInterceptor(musicInfo, object : MusicInterceptorCallback {
+            override fun onNext(musicInfo: MusicInfo?) {
+                Log.d(TAG, "onNext: ")
+                if (musicInfo == null || musicInfo.musicId.isEmpty()) {
+                    onInterrupt("播放地址为空")
+                } else {
+                    add(musicInfo)
+                    player?.play(currentMusicInfo())
+                }
+            }
+
+            override fun onInterrupt(message: String?) {
+                onPlayerError(musicInfo, message.orEmpty())
+            }
+        })
     }
 
     /**
@@ -97,12 +117,12 @@ class MusicController : CustomMusicPlayer.Callback {
     }
 
     override fun onSkipToNext() {
-        onPlayerStateChanged(currentMusicInfo(),CustomMusicPlayer.STATE_SWITCH)
+        onPlayerStateChanged(currentMusicInfo(), CustomMusicPlayer.STATE_SWITCH)
         Log.d(TAG, "onSkipToNext: ")
     }
 
     override fun onSkipToLast() {
-        onPlayerStateChanged(currentMusicInfo(),CustomMusicPlayer.STATE_SWITCH)
+        onPlayerStateChanged(currentMusicInfo(), CustomMusicPlayer.STATE_SWITCH)
         Log.d(TAG, "onSkipToLast: ")
     }
 
