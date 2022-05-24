@@ -6,9 +6,11 @@ import site.caikun.music.KunMusic
 import site.caikun.music.interceptor.InterceptorService
 import site.caikun.music.interceptor.MusicInterceptor
 import site.caikun.music.interceptor.MusicInterceptorCallback
+import site.caikun.music.listener.OnPlayProgressListener
 import site.caikun.music.queue.MediaSourceManager
 import site.caikun.music.queue.MediaSourceProvider
 import site.caikun.music.utils.MusicInfo
+import site.caikun.music.utils.TimerTaskManager
 
 class MusicController(
     interceptors: List<Pair<MusicInterceptor, String>>
@@ -17,7 +19,11 @@ class MusicController(
     private var player = KunMusic.binder()?.player
     private val interceptorService = InterceptorService()
     private val mediaSourceManager = MediaSourceManager(MediaSourceProvider())
-    private val state = MutableLiveData<String>(MusicState.IDLE)
+    private val state = MutableLiveData(MusicState.IDLE)
+
+    private var timerTaskManager: TimerTaskManager? = null
+    private var isRunningTimerTask = false
+    private var onPlayProgressListener: OnPlayProgressListener? = null
 
     companion object {
         const val TAG = "KunMusic"
@@ -26,13 +32,23 @@ class MusicController(
     init {
         player?.setCallback(this)
         interceptorService.attachInterceptors(interceptors)
+
+        //开始更新进度任务
+        timerTaskManager = TimerTaskManager()
+        timerTaskManager?.setUpdateProgressTask {
+            isRunningTimerTask = true
+            if (player != null) {
+                val position = player!!.position() / 1000
+                val duration = player!!.duration() / 1000
+                val buffered = player!!.buffered() / 1000
+                onPlayProgressListener?.onPlayProgress(position, duration, buffered)
+            }
+        }
     }
 
     fun playMusic(musicInfo: MusicInfo) {
-        Log.d(TAG, "playMusic: ")
         interceptorService.handlerInterceptor(musicInfo, object : MusicInterceptorCallback {
             override fun onNext(musicInfo: MusicInfo?) {
-                Log.d(TAG, "onNext: ")
                 if (musicInfo == null || musicInfo.musicId.isEmpty()) {
                     onInterrupt("播放地址为空")
                 } else {
@@ -64,6 +80,17 @@ class MusicController(
         if (mediaSourceManager.skipQueue(1)) {
             onSkipToNext()
             playMusic(currentMusicInfo())
+        }
+    }
+
+    /**
+     * 设置播放进度监听
+     * @param listener OnPlayProgressListener
+     */
+    fun setOnPlayProgressListener(listener: OnPlayProgressListener) {
+        onPlayProgressListener = listener
+        if (!isRunningTimerTask) {
+            timerTaskManager?.startUpdateProgress()
         }
     }
 

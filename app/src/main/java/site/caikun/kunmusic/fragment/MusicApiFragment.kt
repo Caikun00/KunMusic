@@ -1,11 +1,13 @@
 package site.caikun.kunmusic.fragment
 
+import android.annotation.SuppressLint
 import android.util.Log
 import site.caikun.kunmusic.R
 import site.caikun.kunmusic.databinding.FragmentMusicApiBinding
 import site.caikun.kunmusic.engine.EngineFragment
 import site.caikun.kunmusic.utils.ToastUtil
 import site.caikun.music.KunMusic
+import site.caikun.music.listener.OnPlayProgressListener
 import site.caikun.music.player.MusicState
 import site.caikun.music.utils.MusicInfo
 
@@ -32,16 +34,26 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
         }
 
         KunMusic.with()?.currentState()?.observe(this) {
+            binding.state.text = it.toString()
             when (it) {
                 MusicState.SWITCH, MusicState.PLAYING, MusicState.ERROR ->
                     binding.data = KunMusic.with()?.currentMusicInfo()
             }
-            binding.text.text = it
             Log.d(TAG, "state: $it")
         }
 
         binding.pause.setOnClickListener { KunMusic.with()?.pause() }
+
         binding.last.setOnClickListener { KunMusic.with()?.skipToLast() }
         binding.next.setOnClickListener { KunMusic.with()?.skipToNext() }
+
+        KunMusic.with()?.setOnPlayProgressListener(object : OnPlayProgressListener {
+            @SuppressLint("SetTextI18n")
+            override fun onPlayProgress(position: Long, duration: Long, buffered: Long) {
+                binding.seekBar.max = duration.toInt()
+                binding.seekBar.progress = position.toInt()
+                binding.seekBar.secondaryProgress = buffered.toInt()
+            }
+        })
     }
 }

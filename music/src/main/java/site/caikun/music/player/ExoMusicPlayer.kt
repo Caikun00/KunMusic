@@ -129,7 +129,10 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
      * @return 音乐时长 Long
      */
     override fun duration(): Long {
-        return if (player != null) player!!.duration else 0
+        if (player != null) {
+            return if (player!!.duration < 0) 0 else player!!.duration
+        }
+        return 0
     }
 
     /**
