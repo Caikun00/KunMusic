@@ -10,14 +10,14 @@ class MainLooper(looper: Looper) : Handler(looper) {
     }
 
     fun ui(runnable: Runnable) {
-        if (isMainThread()) {
+        if (Looper.getMainLooper() == Looper.myLooper()) {
             runnable.run()
-        } else instance.post(runnable)
+        } else {
+            instance.post(runnable)
+        }
     }
 
     fun ui(runnable: Runnable, delay: Long) {
         instance.postDelayed(runnable, delay)
     }
-
-    private fun isMainThread() = Looper.getMainLooper() == Looper.myLooper()
 }

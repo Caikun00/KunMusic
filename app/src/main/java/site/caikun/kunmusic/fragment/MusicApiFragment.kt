@@ -16,21 +16,19 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
         //点击播放
         binding.playUrl.setOnClickListener {
             val musicInfo = MusicInfo()
-            musicInfo.musicId = "441491828"
-            KunMusic.with()?.playMusic(musicInfo)
-//            if (binding.input.text.isNotEmpty()) {
-//                musicInfo.musicId = "123"
-//                musicInfo.musicName = "麻雀"
-//                musicInfo.musicAuthor = "李荣浩"
-//                musicInfo.musicUrl = binding.input.text.toString()
-//                musicInfo.musicCover = "https://album.caikun.site/images/OTO.jpg"
-//                KunMusic.with()?.playMusic(musicInfo)
-//
-//                ToastUtil.show(KunMusic.with()?.currentMusicInfo()?.musicUrl.toString())
-//            } else {
-//                musicInfo.musicId = "441491828"
-//                KunMusic.with()?.playMusic(musicInfo)
-//            }
+            if (binding.input.text.isNotEmpty()) {
+                musicInfo.musicId = "123"
+                musicInfo.musicName = "麻雀"
+                musicInfo.musicAuthor = "李荣浩"
+                musicInfo.musicUrl = binding.input.text.toString()
+                musicInfo.musicCover = "https://album.caikun.site/images/OTO.jpg"
+                KunMusic.with()?.playMusic(musicInfo)
+
+                ToastUtil.show(KunMusic.with()?.currentMusicInfo()?.musicUrl.toString())
+            } else {
+                musicInfo.musicId = "441491828"
+                KunMusic.with()?.playMusic(musicInfo)
+            }
         }
 
         KunMusic.with()?.currentState()?.observe(this) {
