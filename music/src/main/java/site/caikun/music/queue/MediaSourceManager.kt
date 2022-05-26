@@ -22,13 +22,16 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
         mediaSourceProvider.addMusicInfo(musicInfoList)
     }
 
+    fun getMusicInfoList(): MutableList<MusicInfo> {
+        return mediaSourceProvider.musicInfoList
+    }
+
     /**
      * 当前播放音乐信息
      * @return MusicInfo
      */
-    fun currentMusicInfo(): MusicInfo {
-        Log.d(TAG, "currentMusicInfo: ${mediaSourceProvider.musicInfoList.size}")
-        return mediaSourceProvider.musicInfoList[index]
+    fun currentMusicInfo(): MusicInfo? {
+        return mediaSourceProvider.musicInfoList.elementAtOrNull(index)
     }
 
     /**
@@ -48,6 +51,12 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
         mediaSourceProvider.addMusicInfo(musicInfo, index)
     }
 
+    fun addMusicInfo(musicInfoList: MutableList<MusicInfo>) {
+        if (musicInfoList.isNotEmpty()) {
+            mediaSourceProvider.addMusicInfo(musicInfoList)
+        }
+    }
+
     fun removeMusicInfo(musicInfo: MusicInfo): Boolean {
         return mediaSourceProvider.removeMusicInfo(musicInfo)
     }
@@ -59,23 +68,31 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
     /**
      * 切换音乐实现
      * @param amount 跳过个数
+     * fixme 逻辑有误
      */
     fun skipQueue(amount: Int): Boolean {
         val musicSize = mediaSourceProvider.musicInfoList.size
         val position = index + amount
 
         if (musicSize == 0) return false
+
+        //如果列表中只有一个，则重新播放
         if (musicSize == 1) {
             index = 0
             return true
         }
-        if (amount > 1) {
+
+        //下一首
+        if (amount > 0) {
             index = position
             if (musicSize <= index) index %= musicSize
-        } else {
+        }
+        //上一首
+        else {
             index = position
             if (index == 0) index = musicSize - 1
         }
+        Log.d(TAG, "skipQueue: $index size ${mediaSourceProvider.musicInfoList.size}")
         return true
     }
 }

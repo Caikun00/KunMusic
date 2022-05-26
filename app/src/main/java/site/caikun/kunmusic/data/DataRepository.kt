@@ -2,6 +2,8 @@ package site.caikun.kunmusic.data
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import site.caikun.kunmusic.data.api.IDatabase
+import site.caikun.kunmusic.data.api.ILocal
 import site.caikun.kunmusic.data.api.INetwork
 import site.caikun.kunmusic.data.api.MusicApiService
 import site.caikun.kunmusic.data.bean.MusicUrl
@@ -12,7 +14,7 @@ import site.caikun.kunmusic.http.SchedulerProvider
 import site.caikun.kunmusic.http.error.ResponseException
 import site.caikun.kunmusic.utils.ToastUtil
 
-object DataRepository : INetwork {
+object DataRepository : IDatabase, INetwork, ILocal {
 
     const val TAG = "DataRepository"
 

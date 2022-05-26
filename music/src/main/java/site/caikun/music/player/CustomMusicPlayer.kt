@@ -14,7 +14,7 @@ interface CustomMusicPlayer {
         const val STATE_BUFFERING = 6     //缓冲
     }
 
-    fun play(musicInfo: MusicInfo)
+    fun play(musicInfo: MusicInfo?)
 
     fun start()
 

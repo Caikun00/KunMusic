@@ -6,7 +6,6 @@ import android.widget.SeekBar
 import site.caikun.kunmusic.R
 import site.caikun.kunmusic.databinding.FragmentMusicApiBinding
 import site.caikun.kunmusic.engine.EngineFragment
-import site.caikun.kunmusic.utils.ToastUtil
 import site.caikun.music.KunMusic
 import site.caikun.music.listener.OnPlayProgressListener
 import site.caikun.music.player.MusicState
@@ -19,19 +18,13 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
 
         //点击播放
         binding.playUrl.setOnClickListener {
-            val musicInfo = MusicInfo()
             if (binding.input.text.isNotEmpty()) {
-                musicInfo.musicId = "123"
-                musicInfo.musicName = "麻雀"
-                musicInfo.musicAuthor = "李荣浩"
-                musicInfo.musicUrl = binding.input.text.toString()
-                musicInfo.musicCover = "https://album.caikun.site/images/OTO.jpg"
-                KunMusic.with()?.playMusic(musicInfo)
-
-                ToastUtil.show(KunMusic.with()?.currentMusicInfo()?.musicUrl.toString())
-            } else {
-                musicInfo.musicId = "441491828"
-                KunMusic.with()?.playMusic(musicInfo)
+                val musicInfo = MusicInfo()
+                musicInfo.musicId = binding.input.text.toString()
+                KunMusic.with()?.apply {
+                    add(musicInfo)
+                    playMusic(musicInfo)
+                }
             }
         }
 
@@ -45,6 +38,16 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
         }
 
         binding.pause.setOnClickListener { KunMusic.with()?.pause() }
+
+        binding.add.setOnClickListener {
+            val musicInfoList = mutableListOf<MusicInfo>()
+            musicInfoList.add(MusicInfo("441491828"))
+            musicInfoList.add(MusicInfo("1365898499"))
+            musicInfoList.add(MusicInfo("1407551413"))
+            KunMusic.with()?.apply {
+                playMusic(musicInfoList)
+            }
+        }
 
         binding.last.setOnClickListener { KunMusic.with()?.skipToLast() }
         binding.next.setOnClickListener { KunMusic.with()?.skipToNext() }
@@ -64,11 +67,11 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
                 if (user) KunMusic.with()?.seekTo(position.toLong())
             }
 
-            override fun onStartTrackingTouch(p0: SeekBar?) {
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
 
             }
 
-            override fun onStopTrackingTouch(p0: SeekBar?) {
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
 
             }
         })

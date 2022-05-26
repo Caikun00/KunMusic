@@ -63,7 +63,8 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
      * 播放音乐
      * @param musicInfo
      */
-    override fun play(musicInfo: MusicInfo) {
+    override fun play(musicInfo: MusicInfo?) {
+        if (musicInfo == null) return
         if (!TextUtils.isEmpty(musicInfo.musicId)) {
             error = false
             val source = musicInfo.musicUrl
@@ -95,14 +96,13 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
      * 暂停 继续
      */
     override fun pause() {
+        if (state() == STATE_IDLE) return
         if (!error) {
             if (player?.isPlaying == true) {
-                Log.d(TAG, "player pause: ")
                 player?.pause()
                 callback?.onPlayerStateChanged(currentMusicInfo, STATE_PAUSE)
 
             } else {
-                Log.d(TAG, "player play: ")
                 player?.play()
                 callback?.onPlayerStateChanged(currentMusicInfo, STATE_PLAYING)
             }
@@ -122,6 +122,7 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
     override fun seekTo(position: Long) {
         if (position > 0 && position < duration()) {
             player?.seekTo(position)
+            start()
         }
     }
 
@@ -185,6 +186,15 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
             callback?.apply {
                 onPlayerError(currentMusicInfo, message.message.toString())
             }
+        }
+    }
+
+    private fun state(): Int {
+        return when (player?.playbackState) {
+            Player.STATE_IDLE -> STATE_IDLE
+            Player.STATE_BUFFERING -> STATE_BUFFERING
+            Player.STATE_READY -> STATE_PLAYING
+            else -> STATE_IDLE
         }
     }
 }

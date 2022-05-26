@@ -46,7 +46,8 @@ class MusicController(
         }
     }
 
-    fun playMusic(musicInfo: MusicInfo) {
+    fun playMusic(musicInfo: MusicInfo?) {
+        if (musicInfo == null) return
         interceptorService.handlerInterceptor(musicInfo, object : MusicInterceptorCallback {
             override fun onNext(musicInfo: MusicInfo?) {
                 if (musicInfo == null || musicInfo.musicId.isEmpty()) {
@@ -61,6 +62,13 @@ class MusicController(
                 onPlayerError(musicInfo, message.orEmpty())
             }
         })
+    }
+
+    fun playMusic(musicInfoList: MutableList<MusicInfo>) {
+        if (musicInfoList.isNotEmpty()){
+            mediaSourceManager.addMusicInfo(musicInfoList)
+            playMusic(mediaSourceManager.currentMusicInfo())
+        }
     }
 
     /**
@@ -102,7 +110,7 @@ class MusicController(
 
     fun currentState() = state
 
-    fun currentMusicInfo(): MusicInfo = mediaSourceManager.currentMusicInfo()
+    fun currentMusicInfo(): MusicInfo? = mediaSourceManager.currentMusicInfo()
 
     fun currentMusicInfoList(): MutableLiveData<List<MusicInfo>> {
         return mediaSourceManager.currentMusicInfoList()
@@ -114,7 +122,7 @@ class MusicController(
      * @return boolean
      */
     fun isCurrentMusicPlaying(musicInfo: MusicInfo): Boolean {
-        return currentMusicInfo().musicId == musicInfo.musicId
+        return currentMusicInfo()?.musicId == musicInfo.musicId
     }
 
     fun add(musicInfo: MusicInfo) = mediaSourceManager.addMusicInfo(musicInfo)

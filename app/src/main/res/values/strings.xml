@@ -5,9 +5,11 @@
     <string name="song_name">歌曲名</string>
     <string name="singer">歌手</string>
     <string name="song_time">00:00</string>
-    <string name="play">播放</string>
-    <string name="playUrl">输入播放地址</string>
+    <string name="playUrl">输入音乐ID</string>
     <string name="pause">暂停</string>
+    <string name="add">添加</string>
+    <string name="play">播放</string>
+    <string name="list">列表</string>
     <string name="last">上一首</string>
     <string name="next">下一首</string>
     <string name="todo">TODO</string>

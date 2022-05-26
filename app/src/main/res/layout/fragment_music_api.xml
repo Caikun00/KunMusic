@@ -122,10 +122,10 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <Button
-                android:id="@+id/play"
+                android:id="@+id/add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/play"
+                android:text="@string/add"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/pause"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -137,10 +137,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/pause"
-                app:layout_constraintBottom_toBottomOf="@+id/play"
+                app:layout_constraintBottom_toBottomOf="@+id/add"
                 app:layout_constraintEnd_toStartOf="@+id/last"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/play"
+                app:layout_constraintStart_toEndOf="@+id/add"
                 tools:ignore="TextContrastCheck" />
 
             <Button

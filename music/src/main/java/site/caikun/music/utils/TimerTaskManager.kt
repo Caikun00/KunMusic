@@ -27,7 +27,7 @@ class TimerTaskManager : LifecycleObserver {
     /**
      * 开始进度更新
      */
-    fun startUpdateProgress(time: Long = 1000) {
+    fun startUpdateProgress(time: Long = 500) {
         stopUpdateProgress()
         if (!executor.isShutdown) {
             scheduledFuture = executor.scheduleAtFixedRate({
@@ -39,7 +39,7 @@ class TimerTaskManager : LifecycleObserver {
         }
     }
 
-    fun stopUpdateProgress() {
+    private fun stopUpdateProgress() {
         isRunning = false
         scheduledFuture?.cancel(false)
     }
