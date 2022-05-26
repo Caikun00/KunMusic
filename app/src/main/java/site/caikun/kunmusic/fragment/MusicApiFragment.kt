@@ -2,6 +2,7 @@ package site.caikun.kunmusic.fragment
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.SeekBar
 import site.caikun.kunmusic.R
 import site.caikun.kunmusic.databinding.FragmentMusicApiBinding
 import site.caikun.kunmusic.engine.EngineFragment
@@ -10,6 +11,7 @@ import site.caikun.music.KunMusic
 import site.caikun.music.listener.OnPlayProgressListener
 import site.caikun.music.player.MusicState
 import site.caikun.music.utils.MusicInfo
+import site.caikun.music.utils.TimeTransition
 
 class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragment_music_api) {
 
@@ -53,6 +55,21 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
                 binding.seekBar.max = duration.toInt()
                 binding.seekBar.progress = position.toInt()
                 binding.seekBar.secondaryProgress = buffered.toInt()
+                binding.time.text = TimeTransition.millisecondToMinute(position, duration)
+            }
+        })
+
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekbar: SeekBar?, position: Int, user: Boolean) {
+                if (user) KunMusic.with()?.seekTo(position.toLong())
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+
             }
         })
     }

@@ -15,7 +15,6 @@ import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_ERROR
 import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_IDLE
 import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_PAUSE
 import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_PLAYING
-import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_SWITCH
 import site.caikun.music.utils.MusicInfo
 
 class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
@@ -98,10 +97,12 @@ class ExoMusicPlayer(private val context: Context) : CustomMusicPlayer {
     override fun pause() {
         if (!error) {
             if (player?.isPlaying == true) {
+                Log.d(TAG, "player pause: ")
                 player?.pause()
                 callback?.onPlayerStateChanged(currentMusicInfo, STATE_PAUSE)
 
             } else {
+                Log.d(TAG, "player play: ")
                 player?.play()
                 callback?.onPlayerStateChanged(currentMusicInfo, STATE_PLAYING)
             }

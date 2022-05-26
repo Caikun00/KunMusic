@@ -38,9 +38,9 @@ class MusicController(
         timerTaskManager?.setUpdateProgressTask {
             isRunningTimerTask = true
             if (player != null) {
-                val position = player!!.position() / 1000
-                val duration = player!!.duration() / 1000
-                val buffered = player!!.buffered() / 1000
+                val position = player!!.position()
+                val duration = player!!.duration()
+                val buffered = player!!.buffered()
                 onPlayProgressListener?.onPlayProgress(position, duration, buffered)
             }
         }

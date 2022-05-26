@@ -9,7 +9,7 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
     private var musicInfoList = MutableLiveData<List<MusicInfo>>()
     private var index = 0
 
-    companion object{
+    companion object {
         const val TAG = "KunMusic"
     }
 
@@ -27,6 +27,7 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
      * @return MusicInfo
      */
     fun currentMusicInfo(): MusicInfo {
+        Log.d(TAG, "currentMusicInfo: ${mediaSourceProvider.musicInfoList.size}")
         return mediaSourceProvider.musicInfoList[index]
     }
 
