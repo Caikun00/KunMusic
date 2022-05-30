@@ -6,11 +6,11 @@ data class MusicUrl(
     @SerializedName("id")
     var id: Long,
     @SerializedName("url")
-    var url: String,
+    var url: String?,
     @SerializedName("br")
     var br: Long,
     @SerializedName("size")
     var size: Long,
     @SerializedName("encodeType")
-    var encodeType: String
+    var encodeType: String?
 )

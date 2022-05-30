@@ -38,13 +38,12 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
      * 当前播放列表
      * @return LiveData 包装的音乐列表
      */
-    fun currentMusicInfoList(): MutableLiveData<List<MusicInfo>> {
-        musicInfoList.postValue(mediaSourceProvider.musicInfoList)
-        return musicInfoList
-    }
+    fun currentMusicInfoList(): MutableLiveData<List<MusicInfo>> = musicInfoList
 
     fun addMusicInfo(musicInfo: MusicInfo) {
         mediaSourceProvider.addMusicInfo(musicInfo)
+        musicInfoList.postValue(mediaSourceProvider.musicInfoList)
+        Log.d(TAG, "musicInfoListSize: ${getMusicInfoList().size}")
     }
 
     fun addMusicInfo(musicInfo: MusicInfo, index: Int) {

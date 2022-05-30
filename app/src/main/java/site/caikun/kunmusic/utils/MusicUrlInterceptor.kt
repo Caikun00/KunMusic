@@ -29,13 +29,13 @@ class MusicUrlInterceptor : MusicInterceptor() {
             .compose(SchedulerProvider.applySchedulers())
             .subscribe(object : NetworkObserver<MusicResponseResult<List<MusicUrl>>>() {
                 override fun onSuccess(data: MusicResponseResult<List<MusicUrl>>) {
-                    if (data.code == 200) {
-                        musicInfo.musicUrl = data.data?.get(0)!!.url
-                        Log.d(TAG, "onSuccess: ${musicInfo.musicUrl}")
-                        callback.onNext(musicInfo)
-                    } else {
-                        callback.onInterrupt("播放地址为空！")
+                    if (data.code == 200 && data.data?.isNotEmpty() == true) {
+                        musicInfo.musicUrl = data.data[0].url.toString()
+                        if (musicInfo.musicUrl.isNotEmpty() && musicInfo.musicUrl != "null") {
+                            callback.onNext(musicInfo)
+                        }
                     }
+                    callback.onInterrupt("拦截器获取播放地址失败")
                 }
 
                 override fun onFailure(e: ResponseException) {

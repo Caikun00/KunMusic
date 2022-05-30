@@ -35,4 +35,8 @@ object DataRepository : IDatabase, INetwork, ILocal {
                 }
             })
     }
+
+    override fun musicList() {
+
+    }
 }

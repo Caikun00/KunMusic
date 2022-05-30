@@ -1,6 +1,9 @@
 package site.caikun.kunmusic.fragment
 
+import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
+import com.drake.brv.utils.linear
+import com.drake.brv.utils.setup
 import site.caikun.kunmusic.R
 import site.caikun.kunmusic.data.DataRepository
 import site.caikun.kunmusic.data.bean.MusicUrl
