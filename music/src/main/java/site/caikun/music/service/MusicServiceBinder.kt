@@ -18,11 +18,6 @@ class MusicServiceBinder(private var context: Context) : Binder() {
 
     var player: ExoMusicPlayer? = null
 
-    fun random(): String {
-        val number = Random.nextInt(0, 100)
-        return number.toString()
-    }
-
     private fun initPlayer() {
         player = ExoMusicPlayer(context)
         Log.d(TAG, "initPlayer: ")

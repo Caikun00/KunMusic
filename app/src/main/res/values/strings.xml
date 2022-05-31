@@ -13,4 +13,5 @@
     <string name="last">上一首</string>
     <string name="next">下一首</string>
     <string name="todo">TODO</string>
+    <string name="local_music">本地</string>
 </resources>

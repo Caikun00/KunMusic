@@ -7,6 +7,7 @@ import site.caikun.music.interceptor.InterceptorService
 import site.caikun.music.interceptor.MusicInterceptor
 import site.caikun.music.interceptor.MusicInterceptorCallback
 import site.caikun.music.listener.OnPlayProgressListener
+import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_SWITCH
 import site.caikun.music.queue.MediaSourceManager
 import site.caikun.music.queue.MediaSourceProvider
 import site.caikun.music.utils.MusicInfo
@@ -65,10 +66,21 @@ class MusicController(
     }
 
     fun playMusic(musicInfoList: MutableList<MusicInfo>) {
-        if (musicInfoList.isNotEmpty()){
-            mediaSourceManager.addMusicInfo(musicInfoList)
+        if (musicInfoList.isNotEmpty()) {
+            setMusicList(musicInfoList)
             playMusic(mediaSourceManager.currentMusicInfo())
         }
+    }
+
+    fun playMusicByIndex(index: Int = 0) {
+        val musicInfo = mediaSourceManager.musicInfoIndex(index)
+        onPlayerStateChanged(musicInfo, STATE_SWITCH)
+        playMusic(musicInfo)
+        mediaSourceManager.index = index
+    }
+
+    fun findMusicInfoIndex(musicInfo: MusicInfo): Int {
+        return mediaSourceManager.findMusicInfoIndex(musicInfo)
     }
 
     /**

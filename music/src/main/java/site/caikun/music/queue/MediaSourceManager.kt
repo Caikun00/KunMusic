@@ -6,8 +6,8 @@ import site.caikun.music.utils.MusicInfo
 
 class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
 
+    var index = 0
     private var musicInfoList = MutableLiveData<List<MusicInfo>>()
-    private var index = 0
 
     companion object {
         const val TAG = "KunMusic"
@@ -20,10 +20,6 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
     fun setMusicInfoList(musicInfoList: MutableList<MusicInfo>) {
         mediaSourceProvider.clearMusicInfoList()
         mediaSourceProvider.addMusicInfo(musicInfoList)
-    }
-
-    fun getMusicInfoList(): MutableList<MusicInfo> {
-        return mediaSourceProvider.musicInfoList
     }
 
     /**
@@ -42,8 +38,7 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
 
     fun addMusicInfo(musicInfo: MusicInfo) {
         mediaSourceProvider.addMusicInfo(musicInfo)
-        musicInfoList.postValue(mediaSourceProvider.musicInfoList)
-        Log.d(TAG, "musicInfoListSize: ${getMusicInfoList().size}")
+        updateMusicInfoListLiveDate()
     }
 
     fun addMusicInfo(musicInfo: MusicInfo, index: Int) {
@@ -57,21 +52,31 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
     }
 
     fun removeMusicInfo(musicInfo: MusicInfo): Boolean {
-        return mediaSourceProvider.removeMusicInfo(musicInfo)
+        val result = mediaSourceProvider.removeMusicInfo(musicInfo)
+        updateMusicInfoListLiveDate()
+        return result
     }
 
     fun clearMusicInfoList() {
         mediaSourceProvider.clearMusicInfoList()
+        updateMusicInfoListLiveDate()
+    }
+
+    fun musicInfoIndex(index: Int): MusicInfo? {
+        val list = getMusicInfoList()
+        if (index <= list.size && index >= 0) {
+            return list[index]
+        }
+        return null
     }
 
     /**
      * 切换音乐实现
      * @param amount 跳过个数
-     * fixme 逻辑有误
      */
     fun skipQueue(amount: Int): Boolean {
         val musicSize = mediaSourceProvider.musicInfoList.size
-        val position = index + amount
+        var position = index + amount
 
         if (musicSize == 0) return false
 
@@ -80,18 +85,43 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
             index = 0
             return true
         }
-
-        //下一首
-        if (amount > 0) {
-            index = position
-            if (musicSize <= index) index %= musicSize
-        }
         //上一首
-        else {
-            index = position
-            if (index == 0) index = musicSize - 1
+        if (amount > 0) {
+            if (position >= musicSize) {
+                position = 0
+            }
         }
-        Log.d(TAG, "skipQueue: $index size ${mediaSourceProvider.musicInfoList.size}")
+        //下一首
+        else if (amount < 0) {
+            if (position < 0) {
+                position = musicSize - 1
+            }
+        }
+        index = position
         return true
+    }
+
+    /**
+     * 查找歌曲在列表中下标，如果找到返回下标，未找到-1
+     * @param musicInfo MusicInfo
+     * @return index
+     */
+    fun findMusicInfoIndex(musicInfo: MusicInfo): Int {
+        var index = 0
+        getMusicInfoList().forEach { music ->
+            if (musicInfo.musicId == music.musicId) {
+                return index
+            }
+            index++
+        }
+        return -1
+    }
+
+    private fun getMusicInfoList(): MutableList<MusicInfo> {
+        return mediaSourceProvider.musicInfoList
+    }
+
+    private fun updateMusicInfoListLiveDate() {
+        musicInfoList.postValue(getMusicInfoList())
     }
 }

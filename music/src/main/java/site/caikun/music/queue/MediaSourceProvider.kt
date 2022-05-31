@@ -1,6 +1,5 @@
 package site.caikun.music.queue
 
-import android.util.Log
 import site.caikun.music.utils.MusicInfo
 
 class MediaSourceProvider {
@@ -24,13 +23,11 @@ class MediaSourceProvider {
             value.forEach {
                 sources[it.musicId] = it
             }
-            Log.d(TAG, "sources size: ${sources.size}")
         }
 
     fun addMusicInfo(musicInfo: MusicInfo) {
         if (!added(musicInfo.musicId)) {
             sources[musicInfo.musicId] = musicInfo
-            Log.d(TAG, "addMusicInfo: ${musicInfo.musicId}")
         }
     }
 

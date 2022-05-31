@@ -20,12 +20,18 @@ class MusicUrlInterceptor : MusicInterceptor() {
     }
 
     override fun process(musicInfo: MusicInfo?, callback: MusicInterceptorCallback) {
-        if (musicInfo != null) {
-            if (musicInfo.musicId.isEmpty()) callback.onInterrupt("歌曲ID为空")
+        if (musicInfo?.musicId?.isEmpty() == true) {
+            callback.onInterrupt("音乐ID为空")
+            return
+        }
+        if (musicInfo?.musicUrl != "") {
+            callback.onNext(musicInfo)
+            return
         }
 
+        //请求播放地址
         MusicNetworkApi.create(MusicApiService::class.java)
-            .url(musicInfo!!.musicId)
+            .url(musicInfo.musicId)
             .compose(SchedulerProvider.applySchedulers())
             .subscribe(object : NetworkObserver<MusicResponseResult<List<MusicUrl>>>() {
                 override fun onSuccess(data: MusicResponseResult<List<MusicUrl>>) {
@@ -33,6 +39,7 @@ class MusicUrlInterceptor : MusicInterceptor() {
                         musicInfo.musicUrl = data.data[0].url.toString()
                         if (musicInfo.musicUrl.isNotEmpty() && musicInfo.musicUrl != "null") {
                             callback.onNext(musicInfo)
+                            return
                         }
                     }
                     callback.onInterrupt("拦截器获取播放地址失败")

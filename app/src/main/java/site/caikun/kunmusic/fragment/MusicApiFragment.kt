@@ -2,17 +2,17 @@ package site.caikun.kunmusic.fragment
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
-import com.drake.brv.utils.addModels
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.models
 import com.drake.brv.utils.setup
-import org.w3c.dom.Text
 import site.caikun.kunmusic.R
 import site.caikun.kunmusic.data.MusicApiViewModel
 import site.caikun.kunmusic.databinding.FragmentMusicApiBinding
 import site.caikun.kunmusic.engine.EngineFragment
+import site.caikun.kunmusic.utils.ToastUtil
 import site.caikun.music.KunMusic
 import site.caikun.music.listener.OnPlayProgressListener
 import site.caikun.music.player.MusicState
@@ -51,12 +51,27 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
 
         binding.add.setOnClickListener {
             KunMusic.with()?.apply {
-                playMusic(musicData())
+                setMusicList(musicData())
+                playMusicByIndex()
             }
         }
 
         binding.last.setOnClickListener { KunMusic.with()?.skipToLast() }
         binding.next.setOnClickListener { KunMusic.with()?.skipToNext() }
+
+        binding.local.setOnClickListener {
+            val path = "rawresource:///" + R.raw.local
+            val music = MusicInfo(
+                "558290126",
+                "爱你",
+                "王心凌",
+                path,
+                "https://bkimg.cdn.bcebos.com/pic/78310a55b319ebc4b74599628b72d8fc1e178b82b8b6?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2U4MA==,g_7,xp_5,yp_5/format,f_auto"
+            )
+            KunMusic.with()?.apply {
+                playMusic(music)
+            }
+        }
 
         KunMusic.with()?.setOnPlayProgressListener(object : OnPlayProgressListener {
             @SuppressLint("SetTextI18n")
@@ -81,7 +96,6 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
 
             }
         })
-
         setRecycler()
     }
 
@@ -89,14 +103,26 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
         binding.musicRecycler.linear().setup {
             addType<MusicInfo>(R.layout.item_music_layout)
             onBind {
+                val data = getModel<MusicInfo>()
                 findView<TextView>(R.id.number).text = modelPosition.toString()
-                findView<TextView>(R.id.id).text = getModel<MusicInfo>().musicId.toString()
+                findView<TextView>(R.id.id).text = data.musicId
+                findView<TextView>(R.id.active).visibility = View.GONE
+                val info = KunMusic.with()?.currentMusicInfo()
+                if (info?.musicId == data.musicId) {
+                    findView<TextView>(R.id.active).visibility = View.VISIBLE
+                }
+            }
+            onClick(R.id.id) {
+                val info = getModel<MusicInfo>(modelPosition)
+                val index = KunMusic.with()?.findMusicInfoIndex(info)
+                ToastUtil.show("${info.musicId},$index")
+            }
+            onClick(R.id.root) {
+                KunMusic.with()?.playMusicByIndex(modelPosition)
             }
         }
         KunMusic.with()?.currentMusicInfoList()?.observe(this) {
-            Log.d("KunMusic", "setRecycler: ${it.size}")
             binding.musicRecycler.models = it
-
         }
     }
 
