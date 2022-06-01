@@ -26,10 +26,11 @@ object KunMusic {
     private var interceptors = mutableListOf<Pair<MusicInterceptor, String>>()
 
     @SuppressLint("StaticFieldLeak")
-    private var serviceToken: ServiceToken? = null
+    private var binder: MusicServiceBinder? = null
 
     @SuppressLint("StaticFieldLeak")
-    private var binder: MusicServiceBinder? = null
+    private var serviceToken: ServiceToken? = null
+
 
     private var TAG = "KunMusic"
 
@@ -38,9 +39,7 @@ object KunMusic {
         bindService()
     }
 
-    fun with(): MusicController? {
-        return controller
-    }
+    fun with(): MusicController? = controller
 
     fun addInterceptor(interceptor: MusicInterceptor, thread: String) {
         interceptors += Pair(interceptor, thread)
@@ -49,7 +48,7 @@ object KunMusic {
     /**
      * 绑定服务
      */
-    private fun bindService() {
+    fun bindService() {
         if (isBindService || application == null) return
 
         val contextWrapper = ContextWrapper(application)
@@ -71,7 +70,7 @@ object KunMusic {
     /**
      * 解绑服务
      */
-    private fun unBindService() {
+    fun unBindService() {
         if (serviceToken == null || !isBindService) return
 
         val contextWrapper = serviceToken?.contextWrapper

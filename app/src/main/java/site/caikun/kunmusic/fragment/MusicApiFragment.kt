@@ -15,7 +15,7 @@ import site.caikun.kunmusic.engine.EngineFragment
 import site.caikun.kunmusic.utils.ToastUtil
 import site.caikun.music.KunMusic
 import site.caikun.music.listener.OnPlayProgressListener
-import site.caikun.music.player.MusicState
+import site.caikun.music.player.PlayerStatus
 import site.caikun.music.utils.MusicInfo
 import site.caikun.music.utils.TimeTransition
 
@@ -41,7 +41,7 @@ class MusicApiFragment : EngineFragment<FragmentMusicApiBinding>(R.layout.fragme
         KunMusic.with()?.currentState()?.observe(this) {
             binding.state.text = it.toString()
             when (it) {
-                MusicState.SWITCH, MusicState.ERROR ->
+                PlayerStatus.SWITCH, PlayerStatus.ERROR ->
                     binding.data = KunMusic.with()?.currentMusicInfo()
             }
             Log.d(TAG, "state: $it")

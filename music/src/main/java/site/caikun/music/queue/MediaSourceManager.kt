@@ -1,6 +1,5 @@
 package site.caikun.music.queue
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import site.caikun.music.utils.MusicInfo
 
@@ -36,30 +35,30 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
      */
     fun currentMusicInfoList(): MutableLiveData<List<MusicInfo>> = musicInfoList
 
-    fun addMusicInfo(musicInfo: MusicInfo) {
+    fun add(musicInfo: MusicInfo) {
         mediaSourceProvider.addMusicInfo(musicInfo)
-        updateMusicInfoListLiveDate()
+        updateMusicInfoList()
     }
 
-    fun addMusicInfo(musicInfo: MusicInfo, index: Int) {
+    fun add(musicInfo: MusicInfo, index: Int) {
         mediaSourceProvider.addMusicInfo(musicInfo, index)
     }
 
-    fun addMusicInfo(musicInfoList: MutableList<MusicInfo>) {
+    fun add(musicInfoList: MutableList<MusicInfo>) {
         if (musicInfoList.isNotEmpty()) {
             mediaSourceProvider.addMusicInfo(musicInfoList)
         }
     }
 
-    fun removeMusicInfo(musicInfo: MusicInfo): Boolean {
+    fun remove(musicInfo: MusicInfo): Boolean {
         val result = mediaSourceProvider.removeMusicInfo(musicInfo)
-        updateMusicInfoListLiveDate()
+        updateMusicInfoList()
         return result
     }
 
-    fun clearMusicInfoList() {
+    fun clear() {
         mediaSourceProvider.clearMusicInfoList()
-        updateMusicInfoListLiveDate()
+        updateMusicInfoList()
     }
 
     fun musicInfoIndex(index: Int): MusicInfo? {
@@ -121,7 +120,7 @@ class MediaSourceManager(private val mediaSourceProvider: MediaSourceProvider) {
         return mediaSourceProvider.musicInfoList
     }
 
-    private fun updateMusicInfoListLiveDate() {
+    private fun updateMusicInfoList() {
         musicInfoList.postValue(getMusicInfoList())
     }
 }

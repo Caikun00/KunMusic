@@ -7,6 +7,7 @@ import site.caikun.music.interceptor.InterceptorService
 import site.caikun.music.interceptor.MusicInterceptor
 import site.caikun.music.interceptor.MusicInterceptorCallback
 import site.caikun.music.listener.OnPlayProgressListener
+import site.caikun.music.listener.OnPlayerStatusListener
 import site.caikun.music.player.CustomMusicPlayer.Companion.STATE_SWITCH
 import site.caikun.music.queue.MediaSourceManager
 import site.caikun.music.queue.MediaSourceProvider
@@ -20,11 +21,12 @@ class MusicController(
     private var player = KunMusic.binder()?.player
     private val interceptorService = InterceptorService()
     private val mediaSourceManager = MediaSourceManager(MediaSourceProvider())
-    private val state = MutableLiveData(MusicState.IDLE)
+    private val state = MutableLiveData(PlayerStatus.IDLE)
 
     private var timerTaskManager: TimerTaskManager? = null
     private var isRunningTimerTask = false
     private var onPlayProgressListener: OnPlayProgressListener? = null
+    private var onPlayerStatusListener: OnPlayerStatusListener? = null
 
     companion object {
         const val TAG = "KunMusic"
@@ -54,7 +56,7 @@ class MusicController(
                 if (musicInfo == null || musicInfo.musicId.isEmpty()) {
                     onInterrupt("播放地址为空")
                 } else {
-                    add(musicInfo)
+                    addMusic(musicInfo)
                     player?.play(currentMusicInfo())
                 }
             }
@@ -114,6 +116,14 @@ class MusicController(
         }
     }
 
+    /**
+     * 设置播放器状态监听
+     * @param listener OnPlayerStatusListener
+     */
+    fun setOnPlayerStatusListener(listener: OnPlayerStatusListener) {
+        onPlayerStatusListener = listener
+    }
+
     fun pause() = player?.pause()
 
     fun stop() = player?.stop()
@@ -137,13 +147,15 @@ class MusicController(
         return currentMusicInfo()?.musicId == musicInfo.musicId
     }
 
-    fun add(musicInfo: MusicInfo) = mediaSourceManager.addMusicInfo(musicInfo)
+    fun index() = mediaSourceManager.index
 
-    fun add(musicInfo: MusicInfo, index: Int) = mediaSourceManager.addMusicInfo(musicInfo, index)
+    fun addMusic(musicInfo: MusicInfo) = mediaSourceManager.add(musicInfo)
 
-    fun remove(musicInfo: MusicInfo) = mediaSourceManager.removeMusicInfo(musicInfo)
+    fun addMusic(musicInfo: MusicInfo, index: Int) = mediaSourceManager.add(musicInfo, index)
 
-    fun clear() = mediaSourceManager.clearMusicInfoList()
+    fun removeMusic(musicInfo: MusicInfo) = mediaSourceManager.remove(musicInfo)
+
+    fun clearMusic() = mediaSourceManager.clear()
 
     fun setMusicList(musicInfoList: MutableList<MusicInfo>) {
         mediaSourceManager.setMusicInfoList(musicInfoList)
@@ -154,8 +166,10 @@ class MusicController(
      */
 
     override fun onPlayerStateChanged(musicInfo: MusicInfo?, state: Int) {
-        this.state.postValue(MusicState.transitionState(state))
-        Log.d(TAG, "onPlayerStateChanged: ${MusicState.transitionState(state)}")
+        val s = PlayerStatus.transitionState(state)
+        this.state.postValue(s)
+        onPlayerStatusListener?.onPlayerStateChange(s)
+        Log.d(TAG, "onPlayerStateChanged: ${PlayerStatus.transitionState(state)}")
     }
 
     override fun onComplete() {
@@ -164,12 +178,12 @@ class MusicController(
     }
 
     override fun onSkipToNext() {
-        onPlayerStateChanged(currentMusicInfo(), CustomMusicPlayer.STATE_SWITCH)
+        onPlayerStateChanged(currentMusicInfo(), STATE_SWITCH)
         Log.d(TAG, "onSkipToNext: ")
     }
 
     override fun onSkipToLast() {
-        onPlayerStateChanged(currentMusicInfo(), CustomMusicPlayer.STATE_SWITCH)
+        onPlayerStateChanged(currentMusicInfo(), STATE_SWITCH)
         Log.d(TAG, "onSkipToLast: ")
     }
 

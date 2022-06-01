@@ -1,6 +1,9 @@
 package site.caikun.music.player
 
-class MusicState {
+/**
+ * 播放器所有状态
+ */
+class PlayerStatus {
 
     companion object {
         const val IDLE = "IDLE"
